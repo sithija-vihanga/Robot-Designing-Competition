@@ -52,6 +52,46 @@ Feel free to customize and modify the code to suit your specific requirements an
 
 Please refer to the documentation and code comments within the repository for further details and instructions.
 
+# Autonomous Physical Robot 
+
+![Project Logo or Image](path/to/logo_or_image.png)
+
+This GitHub repository contains the code and documentation for an autonomous robot capable of performing four main tasks: one-sided wall following, line following, maze solving, and navigating through a blind box area.
+
+## Overview
+
+The autonomous robot is built using an Arduino Mega controller board, equipped with 2 metal gear motors for driving the robot. The robot has 3 wheels, with the front wheel acting as a free wheel, while the rear two wheels are connected to the motors for propulsion. It uses 7 infrared (IR) sensors to detect lines and 5 ultrasonic sensors to detect walls and objects in its surroundings.
+
+### Tasks:
+
+1. **One-Sided Wall Following**: The robot can navigate through an environment where one side has a wall and the other side is marked by a red line. The robot follows the red line while keeping the wall on one side.
+
+2. **Line Following**: In a black area, the robot can precisely follow a white line using its IR sensors, maintaining its course along the path.
+
+3. **Maze Solving and Optimal Return Path**: The robot is capable of exploring a line maze autonomously and finding the optimal return path to its starting position.
+
+4. **Blind Box Navigation**: The robot can navigate through a box-like area with random obstacles and multiple exits, successfully finding the correct outlet.
+
+## Getting Started
+
+### Prerequisites
+
+To run the robot's code on your Arduino Mega, you'll need the following:
+
+- Arduino IDE (or any suitable Arduino programming environment) installed on your computer.
+- USB cable to connect the Arduino Mega to your computer.
+
+### Installation
+
+1. Clone this GitHub repository to your local machine.
+2. Open the Arduino IDE and load the robot's code from the repository.
+3. Connect your Arduino Mega to your computer using the USB cable.
+4. Compile the code and upload it to the Arduino Mega board.
+
+## Robot Configuration
+
+To set up the robot for each task, follow the specific instructions provided in the respective code files. Ensure that the wheels and sensors are correctly connected, and the robot is placed in the designated starting position for each task.
+
 ## Contributions
 
 Contributions to this project are welcome! If you encounter any issues or have suggestions for improvement, please feel free to submit a pull request or open an issue in the repository.
