@@ -1,4 +1,6 @@
-# Robot Controller for Object Detection and Navigation
+# Robot Controller for Object Detection, Navigation, Line Following, and Chess Board Solving
+
+This repository contains a robot controller designed for the Webots environment, which utilizes OpenCV for image processing tasks. The controller incorporates various algorithms, such as Gaussian blur and contour detection, to enable efficient object detection within a box arena.
 
 ## Installation
 
@@ -24,11 +26,19 @@ The controller employs OpenCV features to detect the exit from the box arena. By
 
 Front ultrasonic sensors are utilized to detect a broken part of the bridge, and image processing techniques are employed to accurately orient the robot to avoid the damaged section. This ensures that the robot can navigate safely and successfully place the box in the exact required position.
 
+### Line Following
+
+For line following, the robot utilizes infrared line sensors to detect black and white lines. The analog inputs from the sensors are processed using a threshold to determine the line color. A PID motion controller is implemented to ensure precise navigation, especially in areas with dotted lines. To reduce computational load, the camera inputs are turned off during line following.
+
+### Chess Board Solving
+
+For chess board solving, the robot leverages a camera. Initially, gripper arms are used to hoist the first rook into position. The camera is then used to detect the colors of chess pieces on the board. A sharp IR sensor assists in measuring the distance to the chess pieces and the angle of the sensor to the top of each piece. This information is used to identify and map the chess pieces on the board. The solving algorithm is initiated based on this mapping. A string variable, "location," is updated throughout the task to represent the current position of the robot.
+
 ## Usage
 
 To use this robot controller, follow the installation instructions provided above. Additionally, ensure that Webots is properly configured and compatible with the installed OpenCV version.
 
-Once the controller is set up, you can run the program in the Webots environment, and the robot will perform the object detection and navigation tasks as described.
+Once the controller is set up, you can run the program in the Webots environment, and the robot will perform the object detection, navigation, line following, and chess board solving tasks as described.
 
 Feel free to customize and modify the code to suit your specific requirements and enhance the capabilities of the robot controller.
 
@@ -36,6 +46,6 @@ Please refer to the documentation and code comments within the repository for fu
 
 ## Contributions
 
-Contributions to this project are welcome! If you find any issues or have suggestions for improvement, please feel free to submit a pull request or open an issue in the repository.
+Contributions to this project are welcome! If you encounter any issues or have suggestions for improvement, please feel free to submit a pull request or open an issue in the repository.
 
 We appreciate your interest and hope this robot controller proves to be a valuable tool for your Webots projects. Happy coding!
