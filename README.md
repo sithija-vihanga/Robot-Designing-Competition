@@ -27,7 +27,10 @@ The controller employs OpenCV features to detect the exit from the box arena. By
 Front ultrasonic sensors are utilized to detect a broken part of the bridge, and image processing techniques are employed to accurately orient the robot to avoid the damaged section. This ensures that the robot can navigate safely and successfully place the box in the exact required position.
 ## Demo Video
 
-[![Demo Video](![01](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/116638289/a769e75b-cddb-443f-a325-a3b2300d973e))](https://drive.google.com/file/d/1DhPbIWz7QEBu_g_RXwb2x4FTz2rdX_Db/view?usp=sharing)
+https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/116638289/3660a243-abc7-417c-9a33-be8e391b1c9f
+
+
+
 
 
 
