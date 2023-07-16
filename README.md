@@ -34,6 +34,9 @@ For line following, the robot utilizes infrared line sensors to detect black and
 
 For chess board solving, the robot leverages a camera. Initially, gripper arms are used to hoist the first rook into position. The camera is then used to detect the colors of chess pieces on the board. A sharp IR sensor assists in measuring the distance to the chess pieces and the angle of the sensor to the top of each piece. This information is used to identify and map the chess pieces on the board. The solving algorithm is initiated based on this mapping. A string variable, "location," is updated throughout the task to represent the current position of the robot.
 
+![location](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/116638289/dbc29525-5db6-4e3b-95b7-bfeaf747d488)
+
+
 ## Usage
 
 To use this robot controller, follow the installation instructions provided above. Additionally, ensure that Webots is properly configured and compatible with the installed OpenCV version.
