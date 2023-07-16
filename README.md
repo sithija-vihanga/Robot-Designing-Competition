@@ -1,4 +1,4 @@
-# Robot Controller for Object Detection, Navigation, Line Following, and Chess Board Solving
+# Webots Robot Controller for Object Detection, Navigation, Line Following, and Chess Board Solving
 
 This repository contains a robot controller designed for the Webots environment, which utilizes OpenCV for image processing tasks. The controller incorporates various algorithms, such as Gaussian blur and contour detection, to enable efficient object detection within a box arena.
 
