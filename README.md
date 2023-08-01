@@ -75,6 +75,17 @@ The autonomous robot is built using an Arduino Mega controller board, equipped w
 
 4. **Blind Box Navigation**: The robot can navigate through a box-like area with random obstacles and multiple exits, successfully finding the correct outlet.
 
+### Hardware Testing
+IR Sensor Array
+
+Motors and Motor Driver
+
+Line Following Task 
+
+Wall Following Task
+
+
+
 ## Getting Started
 
 ### Prerequisites
