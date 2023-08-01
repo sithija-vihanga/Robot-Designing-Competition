@@ -48,6 +48,11 @@ https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/116638289/
 
 For line following, the robot utilizes infrared line sensors to detect black and white lines. The analog inputs from the sensors are processed using a threshold to determine the line color. A PID motion controller is implemented to ensure precise navigation, especially in areas with dotted lines. To reduce computational load, the camera inputs are turned off during line following.
 
+### Wall Following
+
+The robot uses infrared distance sensors to detect walls and obstacles, maintaining a safe distance from them in the wall-following process. A proportional-Integral-derivative (PID) control algorithm ensures precise navigation. The gains are carefully tuned for optimal performance. This enables the robot to follow walls smoothly and confidently while avoiding collisions and efficiently navigating complex environments.
+
+
 ### Chess Board Solving
 
 For chess board solving, the robot leverages a camera. Initially, gripper arms are used to hoist the first rook into position. The camera is then used to detect the colors of chess pieces on the board. A sharp IR sensor assists in measuring the distance to the chess pieces and the angle of the sensor to the top of each piece. This information is used to identify and map the chess pieces on the board. The solving algorithm is initiated based on this mapping. A string variable, "location," is updated throughout the task to represent the current position of the robot.
