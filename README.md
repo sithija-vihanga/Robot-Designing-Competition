@@ -3,9 +3,6 @@
 This repository contains a robot controller designed for the Webots environment, which utilizes OpenCV for image processing tasks. The controller incorporates various algorithms, such as Gaussian blur and contour detection, to enable efficient object detection within a box arena.
 
 ## Robot 3D Design
-| ![Robot 2](https://github.com/sithija-vihanga/SLRC-UNI-2022/assets/106132194/268a2065-6e54-4442-b7e9-5ce4e8a4b1ea) | ![Robot 1](https://github.com/sithija-vihanga/SLRC-UNI-2022/assets/106132194/78efc6fd-752b-4dd8-827c-03334113d0c2) |
-| ![Robot 3](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/115767667/14b3fa94-97a1-4450-a688-603a0e136ade) | ![Robot 4](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/115767667/00868ce2-8ca6-46de-9c34-60831faa9127) |
-
 
 ![8](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/115767667/9be356e7-b973-4958-8c12-939d63fa7010)
 
