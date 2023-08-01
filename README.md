@@ -5,7 +5,8 @@ This repository contains a robot controller designed for the Webots environment,
 ## Robot 3D Design
 | ![Robot 2](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/115767667/9be356e7-b973-4958-8c12-939d63fa7010) | ![Robot 1](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/115767667/27c95544-99f0-4333-94a9-468b1a5c647a) |
 |:---:|:---:|
-
+| ![Robot 2](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/115767667/14b3fa94-97a1-4450-a688-603a0e136ade) | ![Robot 1](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/115767667/00868ce2-8ca6-46de-9c34-60831faa9127) |
+|:---:|:---:|
 ![8](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/115767667/9be356e7-b973-4958-8c12-939d63fa7010)
 
 ![10](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/115767667/27c95544-99f0-4333-94a9-468b1a5c647a)
