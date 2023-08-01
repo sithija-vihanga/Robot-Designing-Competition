@@ -76,21 +76,21 @@ The autonomous robot is built using an Arduino Mega controller board, equipped w
 4. **Blind Box Navigation**: The robot can navigate through a box-like area with random obstacles and multiple exits, successfully finding the correct outlet.
 
 ### Hardware Testing
-IR Sensor Array
+## IR Sensor Array
 
 
 
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/85d465b3-0766-4df0-9459-13d2586e0e0c
 
 
-Motors and Motor Driver
+## Motors and Motor Driver
 
 
 
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/11cafb27-a3c2-4245-8556-287d934b2579
 
 
-Line Following Task 
+## Line Following Task 
 
 
 
@@ -98,12 +98,7 @@ https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/
 
 
 
-Wall Following Task
-
-https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/be3e753e-96c7-40bf-bf02-0a5e52583e40
-
-
-
+## Wall Following Task
 
 
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/638f4621-4716-47ac-b6b9-7b8c9b40d2a5
