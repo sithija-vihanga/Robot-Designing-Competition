@@ -35,6 +35,12 @@ The controller employs OpenCV features to detect the exit from the box arena. By
 ### Broken Bridge Avoidance
 
 Front ultrasonic sensors are utilized to detect a broken part of the bridge, and image processing techniques are employed to accurately orient the robot to avoid the damaged section. This ensures that the robot can navigate safely and successfully place the box in the exact required position.
+
+
+https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/110180949/d276ef9b-704e-426f-96d2-20a051714e39
+
+
+
 ## Navigating on the Ramp
 
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/116638289/3660a243-abc7-417c-9a33-be8e391b1c9f
@@ -58,6 +64,8 @@ https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/110180949/
 ### Dotted Line Following
 
 
+https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/110180949/143af73f-b127-4746-9edb-153be27e1ba3
+
 
 
 ### Chess Board Solving
@@ -67,6 +75,7 @@ For chess board solving, the robot leverages a camera. Initially, gripper arms a
 ![location](https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/116638289/dbc29525-5db6-4e3b-95b7-bfeaf747d488)
 
 
+### 
 ## Usage
 
 To use this robot controller, follow the installation instructions provided above. Additionally, ensure that Webots is properly configured and compatible with the installed OpenCV version.
