@@ -77,49 +77,19 @@ The autonomous robot is built using an Arduino Mega controller board, equipped w
 
 ### Hardware Testing
 
-<table>
-  <tr>
-    <td>
-      <a href="https://github.com/sithija-vihanga/Robot-Designing-Competition/blob/master/assets/106132194/11cafb27-a3c2-4245-8556-287d934b2579">
-        <img src="https://github.com/sithija-vihanga/Robot-Designing-Competition/raw/master/assets/106132194/11cafb27-a3c2-4245-8556-287d934b2579/thumbnail.jpg" alt="Video 1" style="width:100%">
-      </a>
-    </td>
-    <td>
-      <a href="https://github.com/sithija-vihanga/Robot-Designing-Competition/blob/master/assets/106132194/b9650d9f-ea88-46c7-bc12-cc00e7f0c44a">
-        <img src="https://github.com/sithija-vihanga/Robot-Designing-Competition/raw/master/assets/106132194/b9650d9f-ea88-46c7-bc12-cc00e7f0c44a/thumbnail.jpg" alt="Video 2" style="width:100%">
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center"><b>Video 1</b></td>
-    <td align="center"><b>Video 2</b></td>
-  </tr>
-</table>
-
 ## IR Sensor Array
-
-
-
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/85d465b3-0766-4df0-9459-13d2586e0e0c 
 
 ## Motors and Motor Driver
-
-
-
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/11cafb27-a3c2-4245-8556-287d934b2579
 
 
 ## Line Following Task 
-
-
-
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/b9650d9f-ea88-46c7-bc12-cc00e7f0c44a 
 
 
 
 ## Wall Following Task
-
-
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/638f4621-4716-47ac-b6b9-7b8c9b40d2a5
 
 
@@ -149,3 +119,6 @@ To set up the robot for each task, follow the specific instructions provided in 
 Contributions to this project are welcome! If you encounter any issues or have suggestions for improvement, please feel free to submit a pull request or open an issue in the repository.
 
 We appreciate your interest and hope this robot controller proves to be a valuable tool for your Webots projects. Happy coding!
+
+Our Team
+
