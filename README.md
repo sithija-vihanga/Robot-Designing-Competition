@@ -80,17 +80,6 @@ The autonomous robot is built using an Arduino Mega controller board, equipped w
 ### IR Sensor Array
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/85d465b3-0766-4df0-9459-13d2586e0e0c 
 
-<div style="display: flex; justify-content: center;">
-  <video width="560" controls>
-    <source src="https://github.com/sithija-vihanga/Robot-Designing-Competition/raw/master/assets/106132194/11cafb27-a3c2-4245-8556-287d934b2579/video.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <video width="560" controls>
-    <source src="https://github.com/sithija-vihanga/Robot-Designing-Competition/raw/master/assets/106132194/b9650d9f-ea88-46c7-bc12-cc00e7f0c44a/video.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</div>
-
 ### Motors and Motor Driver
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/11cafb27-a3c2-4245-8556-287d934b2579
 
