@@ -55,6 +55,8 @@ The robot uses infrared distance sensors to detect walls and obstacles, maintain
 
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/110180949/b2181521-9dcc-49c7-9574-2067553f0a92
 
+### Dotted Line Following
+
 
 
 
