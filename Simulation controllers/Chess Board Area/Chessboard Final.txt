@@ -1,0 +1,1138 @@
+//Team Name :- Team Spectro
+#include <webots/Motor.hpp>
+#include <webots/Robot.hpp>
+#include <webots/Keyboard.hpp>
+#include <webots/Camera.hpp>
+//#include <webots/LED.hpp>
+//#include <webots/Motor.hpp>
+
+#include <webots/DistanceSensor.hpp>
+#define TIME_STEP 16
+using namespace webots;
+  Motor *wheels[4];
+  DistanceSensor *DS[10]; //8 + 2 (1 for Sir sensor)
+  DistanceSensor *US[7];  //Ultrasonic sensors
+  Motor *base; 
+  Motor *camControl;
+  Motor *armMotors[6];  
+  
+  bool king=false;//use to find king
+  bool solved=false;//use to detect wether the king is found
+  int extraLength=1;//use this to go extra inch and then stop
+  int extraLeft=1;//this wil use to turn left(time delay)
+  int extraRight=1;
+  int step=-1;//curent step of the chess board
+  int counter = 0;
+  int speed = 9;
+  
+  int movedx=0;
+  int movedy=0;//will use to find the number of check squrs
+  
+  int sensorReadings[8];
+  int midIR;//save mid ir sensor reading
+  int previousmidIR;
+  float SIRsensorReadings=0.0;
+  int ref[8] ;//used to find the alingment of the robot
+  bool checkRight;//side of checked
+  bool black=true;//indecate the robot in the black box or not
+  bool rightClear=true;//check the terminating condition for second loop
+  int passedsqurs = 0;//count the passed chess squrs
+  int turndirection = 0;
+  double Cerror= 0.0;
+  int previousSensorReadings[8] = {1, 1, 1, 1, 1, 1, 1, 1};//stors the sensor readings of previous check(used to traverce the chessboard)
+  double lineControlSignal = 0.0;
+  //Wall following
+  int sonicSensorReadings[7] = {0,0,0,0,0,0,0};
+  double lineErrorSum = 0.0;
+  //double sonar[3]= {0.0, 0.0 ,0.0};// to add sonar sensor values
+  double lineError[5] = {0.0, 0.0, 0.0, 0.0, 0.0};
+  // box gripper control variables
+double rotate = 0.1;
+double upAndDown = 0.0;
+double armrotate = -2.2;
+double catchRight = 0.5;
+double catchLeft = -0.22;
+int stage = 0;
+int gripperCounter = 0;
+//basic montion control
+void controlForward(int n);
+//Control forward
+int iter = 0;
+bool goingForward = false;
+//
+  double line_Kp = 1;
+  double line_Kd = 1;
+  double line_Ki = 0.01; 
+
+  double lineErrorPredict = 0.0;
+  //int x = 7;   // predicting sample
+  //bool turning = false;
+  //double maxSpeed = 5.0;
+  
+  
+
+  void forward();
+  void reverse();
+  void turnRight();
+  void turnLeft();
+  void stop();
+  void skidDrive(double Lspeed, double Rspeed);
+  void readLineSensors();
+  int  compareLines( double values);
+  void pidLineFollower();
+  double maxSpeedControl(double lineControlSignal);
+  ///////////////////////////////////////////////////////////
+  bool colorDetection(char color);
+  void gosqures();
+  void readSharpir();
+  void  grabTheBox();
+  void liftTheBox();
+  char whiteDensity();// should give a character sainng that where is the white chess pieces are
+  void goExtraInch();
+  void turnL();
+  void turnR();
+   
+  //void crossedsqure();
+  
+  //////////////////////////////////////
+  void controlForward(int n){
+      goingForward = true;
+       if (iter<n){
+          forward();
+          iter++;
+      }
+      else{
+        stop();
+        goingForward = false;
+      }
+  }
+  /////////////////////////////////////////
+  bool colorDetection(char color){
+  if (color == 'w'){
+  return true;
+  }
+  else{
+  return false;
+  }
+  }
+  
+
+   void goExtraInch(){
+       
+       extraLength=extraLength+1;
+       skidDrive(9,9);
+   }
+   
+   void turnL(){
+       extraLeft=extraLeft+1;
+       turnLeft();
+       
+       }
+   void turnR(){
+       extraRight=extraRight+1;
+       turnRight();
+       
+       }
+   
+   
+   void readSharpir(){
+  
+   SIRsensorReadings = DS[8]->getValue();
+   if  (SIRsensorReadings<=700){
+
+        king=true;
+        solved=true;                                               
+   }
+   else{
+        king=false;
+   }
+   }
+
+    
+    
+void grabTheBox(){
+            //Get the arm to front
+         if(stage == 0){        //Stage 01
+            if(armrotate <0){
+              armrotate += 0.1;
+              }  
+            else {
+              armrotate +=0;
+              stage++; 
+            } 
+            armMotors[1]->setPosition(armrotate);
+          }
+          if(stage==1){   //Stage 2 open the grippers
+           /*if(catchRight <0.5 && catchLeft >-0.22){
+              catchRight += 0.1;
+              catchLeft -= 0.1;
+              } */
+             
+            if(catchRight >0 && catchLeft <0.4){
+              catchRight += -0.1; 
+              catchLeft -= -0.1; 
+              }
+            else {
+              catchRight +=0; 
+              catchLeft +=0;
+              stage++;
+            }
+            armMotors[4]->setPosition(catchRight);
+            armMotors[5]->setPosition(catchLeft);
+            }
+           if(stage==2){
+             controlForward(150);   //Move forward to correctly grab the box
+             if (not goingForward){
+               step=step+1;
+               stage++;
+               
+             }
+             
+           }
+
+            
+}
+
+void liftTheBox(){
+
+      if(stage == 3){  //stage 04
+             
+            if( catchRight <0.6 && catchLeft >-0.32){   // grab the box
+              catchRight += 0.1;
+              catchLeft -= 0.1;
+              }
+            else {
+              catchRight +=0; 
+              catchLeft +=0;
+              stage++;
+            }
+            armMotors[4]->setPosition(catchRight);
+            armMotors[5]->setPosition(catchLeft);
+           } 
+      else{
+          if(stage<15){
+           stage++;     //wait some iterations before lifting
+           }
+      }
+      if(stage == 15){        //Stage 05           //lift the box
+          
+            if( armrotate >-2.2){
+              armrotate += -0.05; 
+              }
+            else {
+              armrotate +=0;
+              step++; 
+              stage=0;
+            }
+            armMotors[1]->setPosition(armrotate);
+            }
+        
+
+          }
+          
+ void putTheBox(){
+                //Get the arm to front
+         if(stage == 0){        //Stage 01
+            if(armrotate <0){
+              armrotate += 0.1;
+              }  
+            else {
+              armrotate +=0;
+              stage++; 
+            } 
+            armMotors[1]->setPosition(armrotate);
+          }
+          if(stage==1){   //Stage 2 open the grippers
+           /*if(catchRight <0.5 && catchLeft >-0.22){
+              catchRight += 0.1;
+              catchLeft -= 0.1;
+              } */
+             
+            if(catchRight >0 && catchLeft <0.4){
+              catchRight += -0.1; 
+              catchLeft -= -0.1; 
+              }
+            else {
+              catchRight +=0; 
+              catchLeft +=0;
+              stage++;
+            }
+            armMotors[4]->setPosition(catchRight);
+            armMotors[5]->setPosition(catchLeft);
+            }
+           if(stage==2){
+             controlForward(10);   //Move forward to correctly grab the box
+             if (not goingForward){
+               step++;
+               stage=3;
+               
+             }
+             
+           }
+           }
+               
+
+  
+   void readWallSensors(){
+            for (int j = 0; j <7; j++){
+                   sonicSensorReadings[j] = US[j]->getValue();                                                    //Enabling distance sensors using for a loop           
+                                              
+                   }
+      }
+         
+  void gosqures(){//since black = false intialy robo should start at a white block.also initial previoussensor reading is 0, it cant start from a black squre.
+   int arrsum = 0;
+   
+    readSharpir();
+   
+   if(((previousSensorReadings[3]!=4)&&(previousSensorReadings[3]!=2))||( (previousSensorReadings[4]!=4)&&(previousSensorReadings[4]!=2))){
+          // continue;
+       }
+   else{
+   if (midIR!=previousmidIR){
+        //black=(!black);
+        passedsqurs=passedsqurs+1;
+        }
+
+     if (sensorReadings[3]!=previousSensorReadings[3]){
+        black=(!black);
+        
+        }    
+   
+     for (int i=0; i<8; i++){
+
+       ref[i]=sensorReadings[i]-previousSensorReadings[i];
+       arrsum=arrsum+ref[i];
+       if(((ref[i] != 0)&& (i<3) )&&(turndirection != 1)){
+       // check for i=0 or i=1
+       //turnright(2)
+       turndirection = 2;
+       }
+       else if((((ref[i] != 0)&& (i>4) )&&(turndirection != 2))){
+       //turn left
+       turndirection = 1;
+       }
+       } 
+
+  std::cout << turndirection<<"a" << previousSensorReadings[1] <<" " <<previousSensorReadings[2] <<" " << previousSensorReadings[3] <<" " << previousSensorReadings[4] <<" " << previousSensorReadings[5] <<" " << previousSensorReadings[6] <<" " <<previousSensorReadings[7] <<" "  <<std::endl; 
+  std::cout << black<<"b"<< ref[1] <<" " <<ref[2] <<" " << ref[3] <<" " <<ref[4] <<" " << ref[5] <<" " << ref[6] <<" " <<ref[7] <<" "  <<std::endl; 
+   if ((turndirection==1)&&(arrsum!=0)){//turn left
+     skidDrive(1,9);
+     //turnLeft();
+  }
+   if ((turndirection==2)&&(arrsum!=0)){//turn right
+     skidDrive(9,1);
+     //turnRight();
+  }
+  
+   if (arrsum==0){
+     skidDrive(9,9);
+    
+     turndirection=0;
+     
+     if (black){
+         if (sensorReadings[0]!=4){//turnleft
+             skidDrive(2,9);
+         }
+         if (sensorReadings[1]!=4){//turnleft
+              turnLeft();
+         }
+         if (sensorReadings[2]!=4){//turnleft
+              turnLeft();
+         }
+         if (sensorReadings[5]!=4){//turnright
+              turnRight();
+         }
+         if (sensorReadings[6]!=4){//turnleft
+                turnRight();
+         }
+         if (sensorReadings[7]!=4){//turnleft
+               skidDrive(9,2);
+         }
+     }
+     else{
+         if (sensorReadings[0]!=2){//turnleft
+             skidDrive(2,9);
+         }
+         if (sensorReadings[1]!=2){//turnleft
+             turnLeft();
+         }
+         if (sensorReadings[2]!=2){//turnleft
+              turnLeft();
+         }
+         if (sensorReadings[5]!=2){//turnright
+                turnRight();
+         }
+         if (sensorReadings[6]!=2){//turnleft
+                turnRight();
+         }
+         if (sensorReadings[7]!=2){//turnleft
+               skidDrive(9,2);
+         }
+     }
+     }
+}        
+}                                             
+    
+//////////////////////////////////////////////CHESS BOARD///////////////////////////////////////////////////
+  
+
+int main(int argc, char **argv) {
+
+  Robot *robot = new Robot();
+  
+  Keyboard kb;
+  
+  Camera *cm;
+  cm= robot->getCamera("cam");
+  cm->enable(TIME_STEP);
+
+  char wheels_names[4][15] = {"leftTopMotor", "leftRearMotor","rightTopMotor", "rightRearMotor"};                                //store names of motors
+  char dsNames[10][8] = {"IR1","IR2","IR3","IR4","IR5","IR6","IR7","IR8","SIR","IR_mid"}; //#added sharp ir sensor 
+  char ultraSonicNames[7][12] = {"Front","FrontRight","FrontLeft","Right_1","Right_2","Left_1","Left_2"};//initialising sonar sensors for grabing
+  char armMotorNames[6][20] = {"linear motor","rotational motor1","cmBase","camMotor","rotational motor2","rotational motor3"};
+  int i;
+  for (i = 0;  i < 4; i++) {                                      //Initializing motors using a for loop
+    wheels[i] = robot->getMotor(wheels_names[i]);
+    wheels[i]->setPosition(INFINITY);
+    
+  }
+  
+  base=robot->getMotor("cmBase");
+  camControl=robot->getMotor("camMotor");
+  
+  //Initialize distance sensors
+  for (int j = 0; j<10; j++){  //changed  8 to 9 (for sharpIr sensor)                                              //Enabling distance sensors using for a loop
+     DS[j] = robot->getDistanceSensor(dsNames[j]);                 
+     DS[j]->enable(TIME_STEP);                                      
+ }
+ //Initialize the wall sensors
+   for (int j = 0; j<7; j++){ //Enabling distance sensors using for a loop
+     US[j] = robot->getDistanceSensor(ultraSonicNames[j]);                 
+     US[j]->enable(TIME_STEP);                                      
+ }
+ //Initializing motors of the arm using a for loop
+ for (int i = 0; i < 6; i++) { 
+      armMotors[i] = robot->getMotor(armMotorNames[i]);
+      //armMotors[i]->setPosition(INFINITY);
+ }
+ 
+ 
+ 
+ 
+   kb.enable(TIME_STEP);
+
+  
+  
+
+   while (robot->step(TIME_STEP) != -1) {
+             //int key= kb.getKey();
+            //speed = maxSpeedControl(lineControlSignal);
+            //std::cout <<lineErrorPredict <<" "<< lineError[3] <<" " <<lineErrorSum <<std::endl;
+            //std::cout << lineError[0] <<" " << lineError[1] <<" " << lineError[2] <<" " << lineError[3] <<" " << lineError[4] <<" " <<lineErrorSum<<std::endl;   ; 
+             
+            
+           
+             counter+=1;
+            
+             readLineSensors();
+             
+             readWallSensors();
+             
+            if ((sensorReadings[3]==6)&&(step<1)){
+                forward();
+            }
+            
+            else{
+             
+             int mid = DS[9]->getValue();
+             if (mid>400){
+                 //black=true;
+                 midIR=5;// black
+             }
+             else{
+                 //black=false;
+                  midIR=10;// white
+             }
+             
+             if ( sensorReadings[3]==4){
+                 black=true;
+             }
+             else{
+                 black=false;
+             }
+             if((sensorReadings[3]==2 )||( sensorReadings[3]==4)){
+                
+                 
+               
+                std::cout << 'r'<<" " <<mid <<" " << step <<" " <<passedsqurs <<" " << sensorReadings[4] <<" " << sensorReadings[5] <<" " << sensorReadings[6] <<" " << sensorReadings[7] <<" "  <<std::endl;
+              
+
+                if (step==-1){
+                   grabTheBox();
+                   
+                   //liftTheBox();
+                   
+                }
+                
+                if (step==0){
+                  // grabTheBox();
+                  if ((sonicSensorReadings[3]<500)&&(sonicSensorReadings[4]<500)){//chech wether right is clear
+                  rightClear=false;
+                 
+                  }
+                 
+                  liftTheBox();
+                   
+                }
+                if (step==1){
+                //detect the obstacles
+                if (!(rightClear)){
+                 step=23;
+                  movedx=0;
+                  }
+                    turnR();//turn Riht 90
+                 if( extraRight==120){
+                    extraRight=0;
+                    step=2;
+                 }
+
+                }
+                if (step==2){
+                  //detect the obstacles
+                if ((sonicSensorReadings[0]<500)&&(step>1)){
+                  movedx=passedsqurs;
+                  passedsqurs=0;
+                  step=4;//turn left and go
+                  }
+                  gosqures();
+                  if (passedsqurs==6){
+                    step=3;
+                    movedx=passedsqurs;
+                    passedsqurs=0;
+                  }
+
+                }
+                if ((step==3)||(step==6)||(step==9)||(step==12)||(step==15)||(step==18)||(step==21)||(step==59)){
+                   //detect the obstacles
+                  if ((sonicSensorReadings[0]<300)&&(step>1)){//for extra safety
+                  step+=1;
+                  }
+                
+                  goExtraInch();//foward
+                  if ((extraLength==70)&&(step==3)){
+                    step=4;
+                    extraLength=0;
+                  }
+                  if ((extraLength==70)&&(step==6)){
+                    step=7;
+                    extraLength=0;
+                  }
+                   if ((extraLength==80)&&(step==9)){
+                    step=10;
+                    extraLength=0;
+                  }
+                  if ((extraLength==70)&&(step==12)){
+                    step=13;
+                    extraLength=0;
+                  }
+                  if ((extraLength==90)&&(step==15)){
+                    step=16;
+                    extraLength=0;
+                  }
+                  if ((extraLength==70)&&(step==18)){
+                    step=19;
+                    extraLength=0;
+                  }
+                  if ((extraLength==90)&&(step==21)){
+                    step=22;
+                    extraLength=0;
+                  }
+                  if ((extraLength==70)&&(step==59)){
+                    step=60;
+                    extraLength=0;
+                  }
+
+
+                 } 
+                 //////////////////////////////////////////////////////////////////
+                if (step==4){
+           
+                  turnL();//turn left 90
+                  if (extraLeft==140){
+                    step=5;
+                    extraLeft=0;
+                  }
+
+                 } 
+                 //////////////////////////////////////////////////////////////
+                 if ((step==5)||(step==11)||(step==20)){
+                 //detect the obstacles
+                  if ((sonicSensorReadings[0]<500)&&(step==5)){
+                  movedy=passedsqurs;
+                  passedsqurs=0;
+                  step+=2;
+                  }
+                 gosqures();
+                  if ((passedsqurs==7)&&(step==5)){
+                    step=6;
+                    movedy=passedsqurs;
+                    passedsqurs=0;
+                  }
+                  if ((passedsqurs==1)&&(step==11)){
+                    if (solved){
+                    checkRight=true;
+                    step=59;
+                    }
+                    
+                    else{
+                    step=12;
+                    movedx=movedx-1;
+                    passedsqurs=0;
+                    //check wether we have come to the starting position
+                        if (movedx==0){
+                            step=21;
+                        }
+                  }
+                  }
+                  if ((passedsqurs==1)&&(step==20)){
+                    if (solved){
+                    checkRight=true;
+                    step=59;
+ 
+                    }
+                    else{
+                    movedx=movedx-1;
+                    step=12;// ******************* re use*****************//
+                    passedsqurs=0;
+                    if (movedx==0){
+                            step=22;
+                        }
+                  }
+                  }
+
+                  }
+                //////////////////////////////////////////////////////////
+               if (step==60){
+                  turnR();//turn right 180
+                    if ((extraRight==260)){
+                    extraRight=0;
+                    step=61;
+                    //putTheBox();
+                   
+                    } 
+               }
+               ///////////////////////////////////////////////////
+                if (step==61){
+                    
+                    putTheBox();
+                   
+                    } 
+                 ////////////////////////////////////////////////////////
+                 if (step==62){
+                     if (((sonicSensorReadings[3]>500)&&(sonicSensorReadings[4]>500))&&(checkRight)){
+                        turnR();//turn right 90
+                        if ((extraRight==56)){
+                            extraRight=0;
+                            step=63;
+                            //putTheBox();
+                   
+                          }  
+                          }
+                    else if (((sonicSensorReadings[5]>500)&&(sonicSensorReadings[6]>500))&&(!(checkRight))){
+                        turnL();//turn right 90
+                        if ((extraLeft==56)){
+                            extraLeft=0;
+                            step=63;
+                            //putTheBox();
+                   
+                          }  
+                          }
+                     else{
+                     reverse();
+                     //putTheBox();
+                    }
+                    } 
+                    
+                 //////////////////////////////////////////////////////
+                 if (step==63){
+                    
+                    liftTheBox();
+                   
+                    } 
+                    
+                   if (step==64){
+                   if(checkRight){
+                     if (sonicSensorReadings[5]>150){
+                     forward();
+                     }
+                     else{
+                      turnL();
+                      if ((extraLeft==56)){
+                            extraLeft=0;
+                            step=65;
+                            //putTheBox();
+                   
+                          }  
+                      
+                     }
+                   
+                    }
+                    else{
+                    if (sonicSensorReadings[5]>150){
+                     forward();
+                     }
+                     else{
+                      turnR();
+                      if ((extraRight==56)){
+                            extraRight=0;
+                            step=65;
+                            //putTheBox();
+                   
+                          }  
+                      
+                     }
+                    } 
+                    }
+                    if (step==65){
+                    //wall follow();
+                    }
+                    
+               
+                 //////////////////////////////////////////////////////
+               if (step==16){
+                   // readSharpir();
+                  // if(king){
+                    // step=51;
+                    // }
+                  turnR();//turn right 180
+                  if ((extraRight==260)){
+                    step=17;
+                    extraRight=0;
+                  }
+                  }
+               if ((step==7)){
+                  // readSharpir();
+                  // if(king){
+                    // step=50;
+                    //}
+                  turnR();
+                  if ((extraRight==280)){
+                    step=8;
+                    extraRight=0;
+                  }
+
+                 } 
+                //////////////////////////////////////////////////////////////////// 
+                if ((step==8)||(step==14)||(step==17)){
+                   //detect the obstacles
+                  if ((sonicSensorReadings[0]<300)&&(step==8)){//extra safety
+                  step+=2;
+                  }
+                
+                if ((sonicSensorReadings[0]<500)&&(step==14)){//cheching for obstacles
+                  step+=2;
+                  movedy=passedsqurs;
+                  passedsqurs=0;
+                  }
+                 gosqures();
+                  if ((passedsqurs==movedy)&&(step==8)){
+                    step=9;
+                    movedy=0;
+                    passedsqurs=0;
+                  }
+                  if ((passedsqurs==7)&&(step==14)){
+                    step=15;
+                    movedy=7;
+                    passedsqurs=0;
+                  }
+                  if ((passedsqurs==movedy)&&(step==17)){
+                    step=18;
+                    movedy=0;
+                    passedsqurs=0;
+                  }
+
+                 }
+                 //////////////////////////////////////////////////////////////////
+                 if ((step==10)||(step==13)||(step==19)){
+                  turnR();//turn right 90
+                  if ((extraRight==128)&&(step==10)){
+                    step=11;
+                    extraRight=0;
+                  }
+                  if ((extraRight==140)&&(step==13)){
+                    step=14;
+                    extraRight=0;
+                  }
+                   if ((extraRight==140)&&(step==19)){
+                    step=20;
+                    extraRight=0;
+                  }
+
+                 } 
+                 //////////////////////////////////////////////////////////////
+                ////////////////////////////////////////////////////////////////
+                if (step>21){
+                 step=step-21;
+                if (step==1){
+                    turnR();//turn right 90
+                 if( extraRight==130){
+                    extraRight=0;
+                    step=2;
+                 }
+
+                }
+                if (step==2){
+                   //detect the obstacles
+                  if ((sonicSensorReadings[0]<500)&&(step>1)){
+                  movedy=passedsqurs;
+                  passedsqurs=0;
+                  step=4;
+                  
+                  }
+                  gosqures();
+                  if (passedsqurs==7){
+                    step=3;
+                    movedy=passedsqurs;
+                    passedsqurs=0;
+                  }
+
+                }
+                if ((step==3)||(step==6)||(step==9)||(step==12)||(step==15)||(step==18)||(step==21)){
+                  //detect the obstacles
+                  if ((sonicSensorReadings[0]<500)&&(step>1)){
+                  step+=1;
+                  }
+                  
+                  goExtraInch();//foward
+                  if ((extraLength==70)&&(step==3)){
+                    step=4;
+                    extraLength=0;
+                  }
+                  if ((extraLength==70)&&(step==6)){
+                    step=7;
+                    extraLength=0;
+                  }
+                   if ((extraLength==70)&&(step==9)){
+                    step=10;
+                    extraLength=0;
+                  }
+                  if ((extraLength==70)&&(step==12)){
+                    step=13;
+                    extraLength=0;
+                  }
+                  if ((extraLength==70)&&(step==15)){
+                    step=16;
+                    extraLength=0;
+                  }
+                  if ((extraLength==70)&&(step==18)){
+                    step=19;
+                    extraLength=0;
+                  }
+                  if ((extraLength==70)&&(step==21)){
+                    step=22;
+                    extraLength=0;
+                  }
+                
+
+
+                 } 
+                 //////////////////////////////////////////////////////////////////
+                if (step==4){
+                  turnR();//turn right 90
+                  if (extraRight==140){
+                    step=5;
+                    extraRight=0;
+                  }
+
+                 } 
+                 //////////////////////////////////////////////////////////////
+                 if ((step==5)||(step==11)||(step==20)){
+                   //detect the obstacles
+                  if ((sonicSensorReadings[0]<500)&&(step==5)){
+                  movedx=passedsqurs;
+                  passedsqurs=0;
+                  step=step+2;
+                  }
+                 
+                 gosqures();
+                  if ((passedsqurs==6)&&(step==5)){
+                    step=6;
+                    movedx=passedsqurs;
+                    passedsqurs=0;
+                  }
+                  if ((passedsqurs==1)&&(step==11)){
+                   if (solved){
+                    checkRight=false;
+                    step=76;//38+21=60(maked step 59)
+                   }
+                   else{
+                    step=12;
+                    movedy=movedy-1;
+                    passedsqurs=0;
+                    //check wether we have come to the starting position
+                        if (movedy==0){
+                            step=100;//if error occur step will be '100'
+                        }
+                  }
+                  }
+                  if ((passedsqurs==1)&&(step==20)){
+                   if(solved){
+                   checkRight=false;
+                   step=76;
+                   }
+                   else{
+                    movedy=movedy-1;
+                    step=12;// ******************* re use*****************//
+                    passedsqurs=0;
+                    if (movedy==0){
+                            step=79;//79+21=100(an error occure)
+                        }
+                  }
+                  }
+                  }
+
+                 
+                 //////////////////////////////////////////////////////
+               if (step==7){
+                  //readSharpir();
+                  // if(king){
+                    // step=50;
+                    // }
+                  turnR();//turn right 180
+                  if ((extraRight==270)){
+                    step=8;
+                    extraRight=0;
+                  }
+                  }
+               if ((step==16)){
+                  //readSharpir();
+                  // if(king){
+                    // step=50;
+                    // }
+                  turnL();
+                  if ((extraLeft==290)){
+                    step=17;
+                    extraLeft=0;
+                  }
+
+                 } 
+                //////////////////////////////////////////////////////////////////// 
+                if ((step==8)||(step==14)||(step==17)){
+                  //detect the obstacles
+                  if ((sonicSensorReadings[0]<500)&&(step>1)){//for exttra safety
+                  step+=2;
+                  }
+                  //detect the obstacles
+                  if ((sonicSensorReadings[0]<500)&&(step==14)){
+                  movedx=passedsqurs;
+                  passedsqurs=0;
+                  step+=2;
+                  }
+                 gosqures();
+                  if ((passedsqurs==movedx)&&(step==8)){
+                    step=9;
+                    movedx=0;
+                    passedsqurs=0;
+                  }
+                  if ((passedsqurs==6)&&(step==14)){
+                    step=15;
+                    movedx=6;
+                    passedsqurs=0;
+                  }
+                  if ((passedsqurs==movedx)&&(step==17)){
+                    step=18;
+                    movedx=0;
+                    passedsqurs=0;
+                  }
+
+                 }
+                 //////////////////////////////////////////////////////////////////
+                 if ((step==10)||(step==13)||(step==19)){
+                  turnL();//turn lrft 90
+                  if ((extraLeft==140)&&(step==10)){
+                    step=11;
+                    extraLeft=0;
+                  }
+                  if ((extraLeft==140)&&(step==13)){
+                    step=14;
+                    extraLeft=0;
+                  }
+                   if ((extraLeft==140)&&(step==19)){
+                    step=20;
+                    extraLeft=0;
+                  }
+                  
+
+                 }
+                  
+                 
+                //////////////////////////////////////////////////////////////////
+                ///////////////////////////////////////////////////////////////// 
+                 step=step+21;
+                 }
+                  
+                 }
+               else{
+                   skidDrive(speed+lineControlSignal,speed-lineControlSignal);
+                   readSharpir();
+                   //std::cout <<SIRsensorReadings <<" "<< sonicSensorReadings[0] <<" " <<lineErrorSum <<std::endl;
+                   pidLineFollower();
+                 }
+                 for (int i=0; i<8; i++){
+                   previousSensorReadings[i]=sensorReadings[i];
+                  
+                       }
+                 previousmidIR=midIR;
+                 }
+                 }
+                 }
+               
+           
+         
+
+ void forward(){
+               wheels[0]->setVelocity(speed);
+               wheels[1]->setVelocity(speed);
+               wheels[2]->setVelocity(speed);
+               wheels[3]->setVelocity(speed);
+ }
+void reverse(){
+               wheels[0]->setVelocity(-speed);
+               wheels[1]->setVelocity(-speed);
+               wheels[2]->setVelocity(-speed);
+               wheels[3]->setVelocity(-speed);
+ }
+ 
+ void turnRight(){
+               wheels[0]->setVelocity(speed);
+               wheels[1]->setVelocity(speed);
+               wheels[2]->setVelocity(-speed);
+               wheels[3]->setVelocity(-speed);
+ }
+
+ void turnLeft(){
+               wheels[0]->setVelocity(-speed);
+               wheels[1]->setVelocity(-speed);
+               wheels[2]->setVelocity(speed);
+               wheels[3]->setVelocity(speed);
+ }
+ 
+ void stop(){
+               wheels[0]->setVelocity(0);
+               wheels[1]->setVelocity(0);
+               wheels[2]->setVelocity(0);
+               wheels[3]->setVelocity(0);
+               extraLength=0;//use this to go extra inch and then stop
+ }
+
+ void skidDrive(double Lspeed , double Rspeed){                //Differential drive
+               wheels[0]->setVelocity(Lspeed);
+               wheels[1]->setVelocity(Lspeed);
+               wheels[2]->setVelocity(Rspeed);
+               wheels[3]->setVelocity(Rspeed);
+ }
+ 
+ void readLineSensors(){
+               
+                for (int j = 0; j <8; j++){
+                   sensorReadings[j] = DS[j]->getValue();
+                   std::cout << sensorReadings[j] <<" " <<std::endl;                                                    //Enabling distance sensors using for a loop
+                   sensorReadings[j] = compareLines( sensorReadings[j]);              
+                                              
+                   }
+ }
+ 
+ int compareLines(double value){                    // Extracting colors
+                if (value<100){
+                  return 1;
+                }
+                else if((value>100) and (value <240)){
+                  return 2;//chess board white
+                }
+                else if((value>240) and (value <350)){
+                  return 4;//chess board black//red
+                }
+                else if((value>350) and (value <600)){
+                     if ((step>0)&&(step<58)){
+                       return(4);
+                      }
+                      else{
+                       return 6;//chess board black//red
+                }
+                }
+                
+                else if(value>600 and value <700){
+                  return 3;
+                }
+                else if(value>700){
+                  return 0;
+                }
+                else {
+                  return 5;
+                }
+               
+ }
+
+
+ void pidLineFollower(){
+                for (int i = 0; i<4 ; i++){                           // Storing 5 previous lineError values
+                  lineError[i] = lineError[i+1];
+                }
+
+              
+                if (lineError[3]>lineError[2]){                          
+                  if (lineError[3]<lineError[2]+8){                      
+                      
+                  }
+                  else{
+                    lineError[3] = lineError[2];
+                  }
+                }
+                else if(lineError[3]<lineError[2]){
+                  if (8+lineError[3]>lineError[2]){                      
+                      
+                  }
+                   else{
+                    lineError[3] = lineError[2];
+                  }
+                }
+                
+                lineErrorSum += lineError[3];                    // Get sum of the errors
+                
+
+          
+                //lineError[4] = 2*(sensorReadings[7]-sensorReadings[5])+2*(1-sensorReadings[7])*(1-sensorReadings[5])*(sensorReadings[4]-sensorReadings[0])+(sensorReadings[4]-sensorReadings[1]);      // Error algorithm
+                lineError[4] = 3*(sensorReadings[0]-sensorReadings[7])+2*(sensorReadings[1]-sensorReadings[6])+(sensorReadings[2]-sensorReadings[5]);      // Error algorithm
+
+               
+                lineErrorPredict = (lineError[3]-lineError[1 ]);       // Derivative
+               
+                
+                //lineErrorPredict = ((x-2)*(x-3)*(x-4)/(-6)*(lineError[0])) + ((x-1)*(x-3)*(x-4)/(2)*(lineError[1])) + ((x-1)*(x-2)*(x-4)/(-2)*(lineError[2])) + ((x-1)*(x-2)*(x-3)/(6)*(lineError[3]))/100;
+                
+                /////////////////////////////////    PID control signal  ////////////////////////////
+
+                lineControlSignal = 0.8*lineError[4] + 0.5*line_Ki*lineErrorSum + lineErrorPredict;    
+
+                ///////////////////////////////////////////////////////////////////////////////////  
+                
+                // Defining boundaries
+                
+                if ((lineErrorSum > 15) or (lineErrorSum < 15)){                      //Regulating the max speed
+                     speed = 3;
+                  }
+                else if ((lineErrorPredict>8)){                      //Regulating the max speed
+                     speed = 2;
+                  }
+
+                if (lineErrorSum>30){                               //Regulating max lineError
+                  lineErrorSum = 30;
+                } 
+                else if (lineErrorSum<-30){                               //Regulating max lineError
+                  lineErrorSum = -30;
+                }
+           
+
+ }
+
