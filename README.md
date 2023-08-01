@@ -94,11 +94,15 @@ Line Following Task
 
 
 
-https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/b9650d9f-ea88-46c7-bc12-cc00e7f0c44a
+https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/b9650d9f-ea88-46c7-bc12-cc00e7f0c44a 
 
 
 
 Wall Following Task
+
+https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/be3e753e-96c7-40bf-bf02-0a5e52583e40
+
+
 
 
 
