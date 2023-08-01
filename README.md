@@ -67,7 +67,7 @@ Please refer to the documentation and code comments within the repository for fu
 
 # Autonomous Physical Robot 
 
-![Project Logo or Image](path/to/logo_or_image.png)
+
 
 This GitHub repository contains the code and documentation for an autonomous robot capable of performing four main tasks: one-sided wall following, line following, maze solving, and navigating through a blind box area.
 
