@@ -80,7 +80,7 @@ The autonomous robot is built using an Arduino Mega controller board, equipped w
 
 
 
-https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/85d465b3-0766-4df0-9459-13d2586e0e0c
+https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/85d465b3-0766-4df0-9459-13d2586e0e0c !https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/11cafb27-a3c2-4245-8556-287d934b2579
 
 
 ## Motors and Motor Driver
