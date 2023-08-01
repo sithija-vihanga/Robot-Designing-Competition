@@ -88,7 +88,6 @@ https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/b9650d9f-ea88-46c7-bc12-cc00e7f0c44a 
 
 
-
 ## Wall Following Task
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/106132194/638f4621-4716-47ac-b6b9-7b8c9b40d2a5
 
