@@ -25,7 +25,7 @@ The controller employs OpenCV features to detect the exit from the box arena. By
 ### Broken Bridge Avoidance
 
 Front ultrasonic sensors are utilized to detect a broken part of the bridge, and image processing techniques are employed to accurately orient the robot to avoid the damaged section. This ensures that the robot can navigate safely and successfully place the box in the exact required position.
-## Demo Video
+## Navigating on the Ramp
 
 https://github.com/sithija-vihanga/Robot-Designing-Competition/assets/116638289/3660a243-abc7-417c-9a33-be8e391b1c9f
 
