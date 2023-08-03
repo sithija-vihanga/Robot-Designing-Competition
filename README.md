@@ -146,5 +146,4 @@ Contributions to this project are welcome! If you encounter any issues or have s
 
 We appreciate your interest and hope this robot controller proves to be a valuable tool for your Webots projects. Happy coding!
 
-Our Team
 
